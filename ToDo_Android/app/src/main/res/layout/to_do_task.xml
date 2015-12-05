@@ -7,22 +7,51 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="To Do Description"
         android:id="@+id/todoTask"
+        android:textStyle="bold"
+        android:textSize="20sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/completeBtn"
-        android:layout_alignBottom="@+id/completeBtn"
         android:gravity="center_vertical"
         android:paddingTop="20dp" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Complete"
-        android:id="@+id/completeBtn"
-        android:layout_alignParentTop="true"
+        android:text="Location"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="4dp"
+        android:id="@+id/location"
+        android:layout_below="@+id/todoTask"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date Time"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"
+        android:id="@+id/datetime"
+        android:layout_below="@+id/todoTask"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textSize="20sp"
+        android:id="@+id/status"
+        android:textStyle="bold"
+        android:layout_above="@+id/datetime"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
 </RelativeLayout>

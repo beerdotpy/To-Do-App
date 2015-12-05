@@ -3,7 +3,6 @@ package com.example.sarthakmeh.todo_android.Utils;
 /**
  * Used SQLite Helper class for DB operations
  */
-import java.util.Date;
 import java.util.HashMap;
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -27,8 +27,13 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table to_do " +
-                        "(id integer primary key autoincrement," +
+                        "(_id integer primary key autoincrement," +
                         "task text,time text,location text,status text)"
+        );
+        db.execSQL(
+                "create table user " +
+                        "(_id integer primary key autoincrement,name text," +
+                        "email email,password password)"
         );
     }
 
@@ -39,6 +44,17 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public boolean insertUser(String name, String email, String password)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", name);
+        contentValues.put("email", email);
+        contentValues.put("password", password);
+        db.insert("user", null, contentValues);
+        return true;
+    }
+
     public boolean insertData(String task, String time, String location,String status)
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -46,15 +62,26 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("task", task);
         contentValues.put("time", time);
         contentValues.put("location", location);
-        contentValues.put("status",status);
+        contentValues.put("status", status);
         db.insert("to_do", null, contentValues);
         return true;
     }
 
     public Cursor getData(){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery("select * from to_do", null);
+        Cursor res =  db.rawQuery("select * from to_do ", null);
         return res;
+    }
+
+    public Boolean checkUser(String email,String pass){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor user =  db.rawQuery("select email from user where email= \"" + email +
+                "\" AND password=\"" + pass+"\";", null);
+        if (user.getCount() == 1){
+            return true;
+        }else {
+            return false;
+        }
     }
 //
 //    public int numberOfRows() {
