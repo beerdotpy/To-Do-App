@@ -1,4 +1,4 @@
-package com.example.sarthakmeh.todo_android.Adapter;
+package com.example.sarthakmeh.todo_android.Adapters;
 
 import android.content.Context;
 import android.database.Cursor;

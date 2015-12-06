@@ -1,8 +1,12 @@
 package com.example.sarthakmeh.todo_android.Activities;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,9 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TimePicker;
 
-import com.example.sarthakmeh.todo_android.Adapter.ToDoCursorAdapter;
+import com.example.sarthakmeh.todo_android.Adapters.ToDoCursorAdapter;
 import com.example.sarthakmeh.todo_android.R;
+import com.example.sarthakmeh.todo_android.BroadcastReceivers.ToDoNotification;
 import com.example.sarthakmeh.todo_android.Utils.DBHelper;
+
+import java.util.Calendar;
 
 public class MainActivity extends Activity {
 
@@ -75,9 +82,24 @@ public class MainActivity extends Activity {
 
                         //Insert Task into DB and set status as Pending
                         dbHelper.insertData(todoDesc,todoDateTime,todoLoc,"Pending");
-                        //update the Todo task list UI
+
+                        //update the To Do task list UI
                         loadToDOList();
 
+                        /***
+                         *Push notification when a To Do item is nearing its due time(say) 15minutes
+                         */
+                        Intent pushNotif = new Intent(MainActivity.this,ToDoNotification.class);
+                        pushNotif.putExtra("task",todoDesc+" at "+todoLoc+" on "+todoTime);
+                        PendingIntent pintent = PendingIntent.getBroadcast(MainActivity.this, 0, pushNotif, 0);
+                        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+                        /*
+                        TODO Change notification time to 15mins
+                         */
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTimeInMillis(System.currentTimeMillis());
+                        calendar.add(Calendar.MINUTE, 1);
+                        alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pintent);
                     }
                 });
 
