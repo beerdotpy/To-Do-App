@@ -32,7 +32,7 @@ public class ToDoNotification extends BroadcastReceiver {
                 .setContentIntent(pIntent)
                 .setAutoCancel(false)
                 .setStyle(new Notification.BigTextStyle().bigText(task +
-                        "\nClick to show notification again in 30 minutes.Slide to cancel"))
+                        "\nClick to snooze or Slide to cancel"))
                 .build();
         notificationManager.notify(0, n);
     }

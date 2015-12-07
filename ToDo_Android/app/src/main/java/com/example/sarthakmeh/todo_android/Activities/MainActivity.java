@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TimePicker;
 
 import com.example.sarthakmeh.todo_android.Adapters.ToDoCursorAdapter;
@@ -69,7 +70,12 @@ public class MainActivity extends Activity {
                 layout.addView(timePicker);
                 final DatePicker datePicker = new DatePicker(MainActivity.this);
                 layout.addView(datePicker);
-                todoTaskBuilder.setView(layout);
+
+                //Add scrollview as DatePicker take too much of space
+                final ScrollView scrollView = new ScrollView(MainActivity.this);
+                scrollView.addView(layout);
+
+                todoTaskBuilder.setView(scrollView);
 
                 todoTaskBuilder.setPositiveButton("Add Task", new DialogInterface.OnClickListener() {
                     @Override
