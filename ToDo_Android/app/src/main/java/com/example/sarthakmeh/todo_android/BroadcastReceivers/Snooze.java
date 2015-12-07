@@ -19,7 +19,7 @@ public class Snooze extends BroadcastReceiver {
          *Cancel current notifications and snooze notification for 30 minutes when notif was clicked
          */
         NotificationManager nMgr = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-        nMgr.cancelAll();
+        nMgr.cancel(intent.getIntExtra("requestCode",-1));
         Intent pushNotif = new Intent(context,ToDoNotification.class);
         pushNotif.putExtra("task",intent.getStringExtra("task"));
         PendingIntent pintent = PendingIntent.getBroadcast(context, intent.getIntExtra("requestCode",-1), pushNotif, 0);

@@ -33,18 +33,16 @@ public class ToDoCursorAdapter extends CursorAdapter {
         // Find fields to populate in inflated template
         TextView tvBody = (TextView) view.findViewById(R.id.todoTask);
         TextView tvLoc = (TextView) view.findViewById(R.id.location);
-        TextView tvStatus = (TextView) view.findViewById(R.id.status);
-        TextView tvTime = (TextView) view.findViewById(R.id.datetime);
+        TextView tvDate = (TextView) view.findViewById(R.id.date);
+        TextView tvTime = (TextView) view.findViewById(R.id.time);
         // Extract properties from cursor
-        String id = cursor.getString(cursor.getColumnIndexOrThrow("_id"));
         String body = cursor.getString(cursor.getColumnIndexOrThrow("task"));
         String location = cursor.getString(cursor.getColumnIndexOrThrow("location"));
-        String status = cursor.getString(cursor.getColumnIndexOrThrow("status"));
         String datetime = cursor.getString(cursor.getColumnIndexOrThrow("time"));
         // Populate fields with extracted properties
-        tvBody.setText(id+". "+body);
-        tvTime.setText(datetime);
-        tvLoc.setText("Location: "+location);
-        tvStatus.setText(status);
+        tvBody.setText(body);
+        tvTime.setText(datetime.split(" ")[0]);
+        tvDate.setText(datetime.split(" ")[1]);
+        tvLoc.setText(location);
     }
 }

@@ -2,7 +2,10 @@ package com.example.sarthakmeh.todo_android.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,11 +19,15 @@ public class Register extends Activity {
     EditText edName,edEmail,edPass,edRePass;
     Button submit;
     DBHelper dbHelper;
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Initialize the database
         dbHelper = new DBHelper(this);
@@ -48,6 +55,10 @@ public class Register extends Activity {
                         if(dbHelper.insertUser(name,email,pass)) {
                             Intent startMain = new Intent(Register.this,MainActivity.class);
                             Toast.makeText(Register.this,"Welcome "+name,Toast.LENGTH_LONG).show();
+                            editor = prefs.edit();
+                            editor.putBoolean("isLoggedIn",true);
+                            editor.putString("user",email);
+                            editor.commit();
                             startActivity(startMain);
                         }else{
                             Toast.makeText(Register.this,"Some problem occurred.Please try again!",Toast.LENGTH_LONG).show();

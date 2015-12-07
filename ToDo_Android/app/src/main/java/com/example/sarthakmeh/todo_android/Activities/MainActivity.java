@@ -7,9 +7,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -50,7 +53,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     int due_time = 15 * 60000; //1 min = 6000 miliseconds
     DBHelper dbHelper;
@@ -58,6 +61,8 @@ public class MainActivity extends Activity {
     ListView lv;
     ImageButton add_task;
     AutoCompleteTextView location;
+    SharedPreferences prefs;
+    String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,8 @@ public class MainActivity extends Activity {
 
         //Initialize the DataBase
         dbHelper = new DBHelper(this);
+
+        user = PreferenceManager.getDefaultSharedPreferences(this).getString("user",null);
 
         //Initialize the layout
         add_task = (ImageButton) findViewById(R.id.add_task);
@@ -125,8 +132,7 @@ public class MainActivity extends Activity {
                         String todoDate = datePicker.getYear() + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getDayOfMonth();
                         String todoDateTime = todoTime + " " + todoDate;
 
-                        //Insert Task into DB and set status as Pending
-                        dbHelper.insertData(todoDesc, todoDateTime, todoLoc, "Pending");
+                        dbHelper.insertData(todoDesc, todoDateTime, todoLoc,user);
 
                         //update the To Do task list UI
                         loadToDOList();
@@ -164,7 +170,7 @@ public class MainActivity extends Activity {
     public void loadToDOList(){
 
         //Pull All the To_Do items from DB and inflate the list
-        Cursor cur = dbHelper.getData();
+        Cursor cur = dbHelper.getData(user);
         if(cur!=null){
             to_do_adapter = new ToDoCursorAdapter(MainActivity.this,cur);
             lv.setAdapter(to_do_adapter);
@@ -204,7 +210,11 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.logout) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            preferences.edit().clear().commit();
+            Intent logout = new Intent(this,Login.class);
+            startActivity(logout);
             return true;
         }
 

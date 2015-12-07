@@ -5,4 +5,6 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_alarm_service">AlarmService</string>
     <string name="title_activity_show_location">ShowLocation</string>
+    <string name="app_id">928215263898315</string>
+    <string name="title_activity_complete_task">CompleteTask</string>
 </resources>

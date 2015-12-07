@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -24,11 +23,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // TODO Auto-generated method stub
+
         db.execSQL(
                 "create table to_do " +
                         "(_id integer primary key autoincrement," +
-                        "task text,time text,location text,status text)"
+                        "task text,time text,location text,user text)"
         );
         db.execSQL(
                 "create table user " +
@@ -39,7 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
+
         db.execSQL("DROP TABLE IF EXISTS to_do");
         onCreate(db);
     }
@@ -55,21 +54,21 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertData(String task, String time, String location,String status)
+    public boolean insertData(String task, String time, String location,String user)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("task", task);
         contentValues.put("time", time);
         contentValues.put("location", location);
-        contentValues.put("status", status);
+        contentValues.put("user",user);
         db.insert("to_do", null, contentValues);
         return true;
     }
 
-    public Cursor getData(){
+    public Cursor getData(String user){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery("select * from to_do ", null);
+        Cursor res =  db.rawQuery("select * from to_do where user= \""+user+"\";", null);
         return res;
     }
 
