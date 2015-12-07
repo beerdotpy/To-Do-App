@@ -11,6 +11,8 @@ import java.util.Calendar;
 
 public class Snooze extends BroadcastReceiver {
 
+    int snooze_time_min = 30;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         /***
@@ -20,14 +22,13 @@ public class Snooze extends BroadcastReceiver {
         nMgr.cancelAll();
         Intent pushNotif = new Intent(context,ToDoNotification.class);
         pushNotif.putExtra("task",intent.getStringExtra("task"));
-        PendingIntent pintent = PendingIntent.getBroadcast(context, 0, pushNotif, 0);
+        PendingIntent pintent = PendingIntent.getBroadcast(context, intent.getIntExtra("requestCode",-1), pushNotif, 0);
         AlarmManager alarm = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        /*
-         TODO Change notification time to 30mins
-        */
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MINUTE, 1);
+        //Snooze time to current time
+        calendar.add(Calendar.MINUTE, snooze_time_min);
         alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pintent);
     }
 }

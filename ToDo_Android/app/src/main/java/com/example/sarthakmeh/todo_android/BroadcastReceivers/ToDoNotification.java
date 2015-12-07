@@ -20,8 +20,9 @@ public class ToDoNotification extends BroadcastReceiver {
         String task = intent.getStringExtra("task");
         Intent snooze = new Intent(context, Snooze.class);
         snooze.putExtra("task",task);
+        snooze.putExtra("requestCode",intent.getStringExtra("requestCode"));
         // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, 0, snooze, 0);
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("requestCode",-1), snooze, 0);
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
