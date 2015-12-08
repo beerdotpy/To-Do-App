@@ -24,6 +24,9 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
+        /*
+        Called when the database is created for the first time
+         */
         db.execSQL(
                 "create table to_do " +
                         "(_id integer primary key autoincrement," +
@@ -38,7 +41,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        /*
+        Called when the database needs to be upgraded
+         */
         db.execSQL("DROP TABLE IF EXISTS to_do");
         onCreate(db);
     }
@@ -82,10 +87,4 @@ public class DBHelper extends SQLiteOpenHelper {
             return false;
         }
     }
-//
-//    public int numberOfRows() {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        int numRows = (int) DatabaseUtils.queryNumEntries(db, "user_location");
-//        return numRows;
-//    }
 }

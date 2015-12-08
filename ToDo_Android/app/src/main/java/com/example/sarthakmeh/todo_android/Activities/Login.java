@@ -25,7 +25,11 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
 
 public class Login extends AppCompatActivity {
 
@@ -83,6 +87,7 @@ public class Login extends AppCompatActivity {
             login = (Button) findViewById(R.id.login);
             register = (Button) findViewById(R.id.register);
             loginButton = (LoginButton) findViewById(R.id.login_button);
+            loginButton.setReadPermissions(Arrays.asList("public_profile, email, user_birthday"));
             loginButton.registerCallback(callbackManager, callback);
 
             //When login button is clicked check if credentials user entered are correct or not
@@ -121,6 +126,7 @@ public class Login extends AppCompatActivity {
 
     //If user click on FB login button then login him through facebook (FBGraph API used)
     private FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
+
         @Override
         public void onSuccess(LoginResult loginResult) {
             GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
@@ -129,16 +135,22 @@ public class Login extends AppCompatActivity {
                         public void onCompleted(
                                 JSONObject object,
                                 GraphResponse response) {
-                            //FB login successfull
+                            //Get facebook email of user
                             Intent start = new Intent(Login.this, MainActivity.class);
-                            editor = prefs.edit().putBoolean("isLoggedIn",true);
+                            editor = prefs.edit();
+                            editor.putBoolean("isLoggedIn",true);
+                            try {
+                                editor.putString("user",object.getString("email"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             editor.commit();
                             Toast.makeText(Login.this, "Welcome", Toast.LENGTH_LONG).show();
                             startActivity(start);
                         }
                     });
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name");
+            parameters.putString("fields", "id,name,email,gender");
             request.setParameters(parameters);
             request.executeAsync();
         }
@@ -153,6 +165,12 @@ public class Login extends AppCompatActivity {
             Log.d("result","exception");
         }
     };
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

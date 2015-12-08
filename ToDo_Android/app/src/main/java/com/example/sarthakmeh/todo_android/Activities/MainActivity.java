@@ -33,6 +33,7 @@ import com.example.sarthakmeh.todo_android.Adapters.ToDoCursorAdapter;
 import com.example.sarthakmeh.todo_android.R;
 import com.example.sarthakmeh.todo_android.BroadcastReceivers.ToDoNotification;
 import com.example.sarthakmeh.todo_android.Utils.DBHelper;
+import com.facebook.login.LoginManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     ListView lv;
     ImageButton add_task;
     AutoCompleteTextView location;
-    SharedPreferences prefs;
     String user;
 
     @Override
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         //Initialize the DataBase
         dbHelper = new DBHelper(this);
 
+        //Get logged in user
         user = PreferenceManager.getDefaultSharedPreferences(this).getString("user",null);
 
         //Initialize the layout
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 todoET.setHint("Description of Task e.g Meet Vishnu");
                 layout.addView(todoET);
 
+                // Google auto complete used for location
                 location = new AutoCompleteTextView(MainActivity.this);
                 location.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        new PlacesTask().execute(s.toString());
+                        new GetPlaces().execute(s.toString());
                     }
 
                     @Override
@@ -137,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                         //update the To Do task list UI
                         loadToDOList();
 
-                        /*
+                        /***
                          * Calculate time difference between current time and Task time
-                           * Subtract 15mins and push notification
+                         * Subtract 15mins and push notification
                          */
                         int time_for_notif = (int) calTime(todoDateTime);
 
@@ -149,11 +151,14 @@ public class MainActivity extends AppCompatActivity {
                         Intent pushNotif = new Intent(MainActivity.this, ToDoNotification.class);
                         pushNotif.putExtra("task", todoDesc + " at " + todoLoc + " on " + todoTime);
                         pushNotif.putExtra("requestCode", time_for_notif);
+
                         //Set RequestCode to uniqueID so that new alarm doesnt override the old one
                         PendingIntent pintent = PendingIntent.getBroadcast(MainActivity.this, time_for_notif, pushNotif, 0);
+
                         AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                        Calendar c = Calendar.getInstance();
+
                         //ADD milliseconds to current time
+                        Calendar c = Calendar.getInstance();
                         c.add(Calendar.MILLISECOND, time_for_notif);
                         alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pintent);
                     }
@@ -179,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public long calTime(String taskDate){
+        /***
+        Subtract current time from task time
+         */
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm yyyy/MM/dd");
         Date taskD = null,currentD = null;
         try {
@@ -213,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.logout) {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             preferences.edit().clear().commit();
+            LoginManager.getInstance().logOut();
             Intent logout = new Intent(this,Login.class);
             startActivity(logout);
             return true;
@@ -222,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Fetches all places from GooglePlaces AutoComplete Web Service
-    private class PlacesTask extends AsyncTask<String, Void, String> {
+    private class GetPlaces extends AsyncTask<String, Void, String> {
 
         JSONObject jsonObject;
         JSONArray jsonArray;
@@ -230,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... place) {
+            //Google Api Server Key for Google places API
             String data = "",input = "";
             String key = "key=AIzaSyB93ZRZWToMGoSz_ujmKEIpDjCs5DHhR4A";
             try {
@@ -260,10 +270,12 @@ public class MainActivity extends AppCompatActivity {
                 //Get predictions array from the response
                 jsonArray = jsonObject.getJSONArray("predictions");
 
+                //Inflate only the descriptions of places into the autocomplete list
                 for(int i=0;i<jsonArray.length();i++){
                     JSONObject place = jsonArray.getJSONObject(i);
                     placesList.add(place.get("description"));
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -271,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayAdapter adapter = new ArrayAdapter(MainActivity.this,
                     android.R.layout.simple_list_item_1, placesList);
             location.setAdapter(adapter);
+
         }
     }
 

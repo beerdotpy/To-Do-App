@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.example.sarthakmeh.todo_android.R;
 
@@ -15,11 +16,15 @@ public class ToDoNotification extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         String task = intent.getStringExtra("task");
+        int requestCode = intent.getIntExtra("requestCode",-1);
+        Log.d("rquestCode",Integer.toString(requestCode));
+
         Intent snooze = new Intent(context, Snooze.class);
         snooze.putExtra("task",task);
-        snooze.putExtra("requestCode",intent.getStringExtra("requestCode"));
-        // use System.currentTimeMillis() to have a unique ID for the pending intent
-        PendingIntent pIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("requestCode",-1), snooze, 0);
+        snooze.putExtra("requestCode",requestCode);
+
+        // use  same requestCode to have a unique ID for the pending intent
+        PendingIntent pIntent = PendingIntent.getBroadcast(context, requestCode, snooze, 0);
 
         NotificationManager notificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
@@ -32,7 +37,8 @@ public class ToDoNotification extends BroadcastReceiver {
                 .setStyle(new Notification.BigTextStyle().bigText(task +
                         "\nClick to snooze or Slide to cancel"))
                 .build();
-        notificationManager.notify(0, n);
+
+        notificationManager.notify(requestCode, n);
     }
 }
 
